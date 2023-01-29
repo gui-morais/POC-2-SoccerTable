@@ -1,0 +1,27 @@
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["fullTextSearch", "fullTextIndex"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model matches {
+  id                        Int     @id @default(autoincrement())
+  home                      Int
+  away                      Int
+  home_goals                Int?
+  away_goals                Int?
+  is_finished               Boolean @default(false)
+  teams_matches_awayToteams teams   @relation("matches_awayToteams", fields: [away], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  teams_matches_homeToteams teams   @relation("matches_homeToteams", fields: [home], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model teams {
+  id                          Int       @id @default(autoincrement())
+  name                        String    @unique
+  matches_matches_awayToteams matches[] @relation("matches_awayToteams")
+  matches_matches_homeToteams matches[] @relation("matches_homeToteams")
+}
